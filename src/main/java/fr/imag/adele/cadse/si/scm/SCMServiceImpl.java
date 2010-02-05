@@ -81,8 +81,7 @@ public class SCMServiceImpl implements SCMService {
 	}
 
 	public void start() {
-		contentHasBeenChanged(null);
-		commitContent(null, "test maven scm manager");
+		
 	}
 	
 	public void stop() {
