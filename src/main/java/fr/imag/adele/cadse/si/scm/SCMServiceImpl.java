@@ -4,6 +4,7 @@ import org.apache.maven.scm.manager.BasicScmManager;
 import org.apache.maven.scm.manager.NoSuchScmProviderException;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import org.apache.maven.scm.ScmFileSet;
 import org.apache.maven.scm.ScmRevision;
 import org.apache.maven.scm.ScmTag;
 import org.apache.maven.scm.ScmVersion;
+import org.apache.maven.scm.command.add.AddScmResult;
 import org.apache.maven.scm.command.checkin.CheckInScmResult;
 import org.apache.maven.scm.command.checkout.CheckOutScmResult;
 import org.apache.maven.scm.command.status.StatusScmResult;
@@ -81,7 +83,7 @@ public class SCMServiceImpl implements SCMService {
 	}
 
 	public void start() {
-		
+		//commitContent(null, "first test");
 	}
 	
 	public void stop() {
@@ -109,11 +111,14 @@ public class SCMServiceImpl implements SCMService {
 	@Override
 	public boolean commitContent(ContentItem contentItem, String comment) {
 		try {
-			String repositoryUrl = "scm:hg:ssh://henry.imag.fr/cadseg";
+			String repositoryUrl = "scm:svn:http://henry.imag.fr/svn/fede-repos/sandbox/thomas/TestSCM";
 			ScmRepository repository =
 				scmManager.makeScmRepository(repositoryUrl);
 			
-			ScmFileSet fileSet = new ScmFileSet(new File("C:\\workspaces\\cadseg\\Model.workspace.CadseG"));
+			ScmFileSet fileSet = new ScmFileSet(new File("C:\\test\\testsvn"), "**.*");
+			AddScmResult addResult = scmManager.add(repository, fileSet, comment);
+			
+			
 			CheckInScmResult statusResult = scmManager.checkIn(repository, fileSet, comment);
 			
 			return statusResult.isSuccess();
@@ -124,6 +129,9 @@ public class SCMServiceImpl implements SCMService {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ScmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
