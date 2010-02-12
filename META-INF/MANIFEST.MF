@@ -11,13 +11,13 @@ Export-Package: fr.imag.adele.cadse.si.scm;uses:="org.apache.maven.scm
  ccurev,org.apache.maven.scm.manager,fr.imag.adele.cadse.as.platformid
  e,org.apache.maven.scm.provider.clearcase,org.apache.maven.scm.provid
  er.svn.svnexe,org.apache.maven.scm.provider.starteam";version="2.3.0"
-Built-By: chomats
+Built-By: etienne
 Tool: Bnd-0.0.357
 Bundle-Name: si.SCMService
 Created-By: Apache Maven Bundle Plugin
 Bundle-Vendor: Adele/LIG/ Grenoble University, France
-Build-Jdk: 1.6.0_17
-Bundle-Version: 2.3.0.SNAPSHOT
+Build-Jdk: 1.6.0_0
+Bundle-Version: 2.3.0.SNAPSHOT-201002121709
 Ipojo-auto-start: true
 Bundle-ManifestVersion: 2
 Bundle-Description: service implementation using maven scm manager to 
