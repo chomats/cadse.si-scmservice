@@ -13,6 +13,7 @@ import org.apache.maven.scm.ScmRevision;
 import org.apache.maven.scm.ScmTag;
 import org.apache.maven.scm.ScmVersion;
 import org.apache.maven.scm.command.add.AddScmResult;
+import org.apache.maven.scm.command.changelog.ChangeLogScmResult;
 import org.apache.maven.scm.command.checkin.CheckInScmResult;
 import org.apache.maven.scm.command.checkout.CheckOutScmResult;
 import org.apache.maven.scm.command.status.StatusScmResult;
@@ -42,7 +43,9 @@ import fr.imag.adele.cadse.core.content.ContentItem;
 
 public class SCMServiceImpl implements SCMService {
 
-	private static final String SVN_URL_INFO_PREFIX = "URL : ";
+	private static final String SVN_URL_INFO_PROP = "URL";
+	private static final String SVN_REV_INFO_PROP = "R?vision";
+	private static final String SVN_INFO_PROP_DELIMITER = " : ";
 	private static final String TYPE_CVS = "cvs";
 	private static final String TYPE_SVN = "svn";
 	private static final String TYPE_PERFORCE = "perforce";
@@ -164,15 +167,19 @@ public class SCMServiceImpl implements SCMService {
 			ScmRepository repository =
 				_scmManager.makeScmRepository(scmRepoUrl);
 			
-			ScmFileSet fileSet = new ScmFileSet(new File(getFilePath(contentItem)), "**.*"); // TODO manage unique file
+			String filePath = getFilePath(contentItem);
+			ScmFileSet fileSet = new ScmFileSet(new File(filePath), "**.*"); // TODO manage unique file
 			AddScmResult addResult = _scmManager.add(repository, fileSet, comment);
 			
-			CheckInScmResult statusResult = _scmManager.checkIn(repository, fileSet, comment);
-			boolean isSuccess = statusResult.isSuccess();
+			CheckInScmResult checkInResult = _scmManager.checkIn(repository, fileSet, comment);
+			boolean isSuccess = checkInResult.isSuccess();
 			if (!isSuccess)
 				return null;
 			
-			return new SCMRevision(statusResult.getScmRevision(), scmRepoUrl);
+			String scmRevision = getScmRevision(filePath);
+			if (scmRevision == null)
+				throw new SCMException("Cannot retireve scm revision.");
+			return new SCMRevision(scmRevision, scmRepoUrl);
 		} catch (ScmRepositoryException e) {
 			e.printStackTrace();
 		} catch (NoSuchScmProviderException e) {
@@ -185,7 +192,7 @@ public class SCMServiceImpl implements SCMService {
 		
 		return null;
 	}
-	
+
 	@Override
 	public boolean contentHasBeenChanged(ContentItem contentItem) throws SCMException {
 		try {
@@ -261,7 +268,28 @@ public class SCMServiceImpl implements SCMService {
 	private String getSvnRepoUrl(ContentItem contentItem) {
 		String filePath = getFilePath(contentItem);
 		
-		String svnRepoUrl = null;
+		String svnRepoUrl = getSvnInfoProp(SVN_URL_INFO_PROP, filePath);
+		
+//		ScmFileSet fileSet = new ScmFileSet(new File(filePath));
+//		SvnInfoCommand infoCmd = (SvnInfoCommand) _svnProvider.getInfoCommand();
+//		String svnUrl = null;
+//		SvnScmProviderRepository scmRepo = new SvnScmProviderRepository("svn://test");
+//		try {
+//			SvnInfoScmResult result = infoCmd.executeInfoCommand(scmRepo, fileSet, null, false, "HEAD");
+//			if (result.isSuccess()) {
+//				for (Object item : result.getInfoItems()) {
+//					//TODO
+//				}
+//			}
+//		} catch (ScmException e) {
+//			e.printStackTrace();
+//		}
+		
+		return svnRepoUrl;
+	}
+
+	private String getSvnInfoProp(String prop, String filePath) {
+		String svnInfoProp = null;
 		BufferedReader inputReader = null;
 		try {
 		    // Execute a command with an argument that contains a space
@@ -274,11 +302,13 @@ public class SCMServiceImpl implements SCMService {
 	        inputReader = new BufferedReader(new InputStreamReader(in));
 
 	        String line;
+	        String prefix = prop + SVN_INFO_PROP_DELIMITER;
 	        while ((line = inputReader.readLine()) != null) {
-	            if (!line.startsWith(SVN_URL_INFO_PREFIX))
+	            
+				if (!line.startsWith(prefix))
 	            	continue;
 	            
-	            svnRepoUrl = line.substring(SVN_URL_INFO_PREFIX.length());
+				svnInfoProp = line.substring(prefix.length());
 	            break;
 	        }
 	        inputReader.close();
@@ -297,23 +327,11 @@ public class SCMServiceImpl implements SCMService {
 					e.printStackTrace();
 				}
 		}
-		
-//		ScmFileSet fileSet = new ScmFileSet(new File(filePath));
-//		SvnInfoCommand infoCmd = (SvnInfoCommand) _svnProvider.getInfoCommand();
-//		String svnUrl = null;
-//		SvnScmProviderRepository scmRepo = new SvnScmProviderRepository("svn://test");
-//		try {
-//			SvnInfoScmResult result = infoCmd.executeInfoCommand(scmRepo, fileSet, null, false, "HEAD");
-//			if (result.isSuccess()) {
-//				for (Object item : result.getInfoItems()) {
-//					//TODO
-//				}
-//			}
-//		} catch (ScmException e) {
-//			e.printStackTrace();
-//		}
-		
-		return svnRepoUrl;
+		return svnInfoProp;
+	}
+	
+	private String getScmRevision(String filePath) {
+		return getSvnInfoProp(SVN_REV_INFO_PROP, filePath);
 	}
 
 	/**
