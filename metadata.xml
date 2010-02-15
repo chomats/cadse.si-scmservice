@@ -5,8 +5,6 @@
 		<callback transition="validate" method="start"/>
 		<callback transition="invalidate" method="stop"/>
 		<provides specification="fr.imag.adele.cadse.as.scm.SCMService"/>
-		<requires field="_platformIDE" optional="false"/>
-		<requires field="_cadseDomain" optional="false"/>
 	</component>
 	<instance component="fr.imag.adele.cadse.si.scm.SCMServiceImpl" 
 		name="fr.imag.adele.cadse.si.scm.instance"/>

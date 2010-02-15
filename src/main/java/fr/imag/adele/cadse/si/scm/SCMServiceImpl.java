@@ -1,11 +1,10 @@
 package fr.imag.adele.cadse.si.scm;
 
-import org.apache.maven.scm.manager.BasicScmManager;
-import org.apache.maven.scm.manager.NoSuchScmProviderException;
-
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
 import org.apache.maven.scm.ScmException;
@@ -17,7 +16,9 @@ import org.apache.maven.scm.command.add.AddScmResult;
 import org.apache.maven.scm.command.checkin.CheckInScmResult;
 import org.apache.maven.scm.command.checkout.CheckOutScmResult;
 import org.apache.maven.scm.command.status.StatusScmResult;
+import org.apache.maven.scm.command.update.UpdateScmResult;
 import org.apache.maven.scm.manager.BasicScmManager;
+import org.apache.maven.scm.manager.NoSuchScmProviderException;
 import org.apache.maven.scm.provider.accurev.AccuRevScmProvider;
 import org.apache.maven.scm.provider.bazaar.BazaarScmProvider;
 import org.apache.maven.scm.provider.clearcase.ClearCaseScmProvider;
@@ -26,28 +27,22 @@ import org.apache.maven.scm.provider.git.gitexe.GitExeScmProvider;
 import org.apache.maven.scm.provider.hg.HgScmProvider;
 import org.apache.maven.scm.provider.perforce.PerforceScmProvider;
 import org.apache.maven.scm.provider.starteam.StarteamScmProvider;
-import org.apache.maven.scm.provider.svn.svnexe.SvnExeScmProvider;
 import org.apache.maven.scm.provider.synergy.SynergyScmProvider;
 import org.apache.maven.scm.provider.vss.VssScmProvider;
 import org.apache.maven.scm.repository.ScmRepository;
 import org.apache.maven.scm.repository.ScmRepositoryException;
-import org.apache.maven.scm.repository.UnknownRepositoryStructure;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IProject;
 
-import fr.imag.adele.cadse.as.platformide.IPlatformIDE;
+import fr.imag.adele.cadse.as.scm.SCMException;
+import fr.imag.adele.cadse.as.scm.SCMRevision;
 import fr.imag.adele.cadse.as.scm.SCMService;
-import fr.imag.adele.cadse.core.CadseDomain;
 import fr.imag.adele.cadse.core.content.ContentItem;
 
 public class SCMServiceImpl implements SCMService {
 
-	IPlatformIDE			_platformIDE;
-
-	CadseDomain				_cadseDomain;
-	
+	private static final String SVN_URL_INFO_PREFIX = "URL : ";
 	private static final String TYPE_CVS = "cvs";
 	private static final String TYPE_SVN = "svn";
 	private static final String TYPE_PERFORCE = "perforce";
@@ -60,97 +55,150 @@ public class SCMServiceImpl implements SCMService {
 	private static final String TYPE_BAZAAR = "bazaar";
 	private static final String TYPE_ACCUREV = "accurev";
 
-	private BasicScmManager scmManager;
+	private BasicScmManager _scmManager;
+	private SvnExecScmProviderWithRepoURL _svnProvider;
 	
 	public SCMServiceImpl() {
-	    scmManager = new BasicScmManager();
+	    _scmManager = new BasicScmManager();
 	    
-	    scmManager.setScmProvider(TYPE_CVS, new CvsJavaScmProvider());
+	    _scmManager.setScmProvider(TYPE_CVS, new CvsJavaScmProvider());
 	    // scmManager.setScmProvider("cvs", new CvsExeScmProvider());
-	    scmManager.setScmProvider(TYPE_SVN, new SvnExeScmProvider());
+	    _svnProvider = new SvnExecScmProviderWithRepoURL();
+		_scmManager.setScmProvider(TYPE_SVN, _svnProvider);
 
-	    scmManager.setScmProvider(TYPE_PERFORCE, new PerforceScmProvider());
-	    scmManager.setScmProvider(TYPE_STARTEAM, new StarteamScmProvider());
-	    scmManager.setScmProvider(TYPE_CLEARCASE, new ClearCaseScmProvider());
-	    scmManager.setScmProvider(TYPE_SYNERGY, new SynergyScmProvider());
-	    scmManager.setScmProvider(TYPE_VSS, new VssScmProvider());
-	    scmManager.setScmProvider(TYPE_HG, new HgScmProvider());
+	    _scmManager.setScmProvider(TYPE_PERFORCE, new PerforceScmProvider());
+	    _scmManager.setScmProvider(TYPE_STARTEAM, new StarteamScmProvider());
+	    _scmManager.setScmProvider(TYPE_CLEARCASE, new ClearCaseScmProvider());
+	    _scmManager.setScmProvider(TYPE_SYNERGY, new SynergyScmProvider());
+	    _scmManager.setScmProvider(TYPE_VSS, new VssScmProvider());
+	    _scmManager.setScmProvider(TYPE_HG, new HgScmProvider());
 	    
-	    scmManager.setScmProvider(TYPE_GIT, new GitExeScmProvider());
+	    _scmManager.setScmProvider(TYPE_GIT, new GitExeScmProvider());
 	    
-	    scmManager.setScmProvider(TYPE_BAZAAR, new BazaarScmProvider());
-	    scmManager.setScmProvider(TYPE_ACCUREV, new AccuRevScmProvider());
+	    _scmManager.setScmProvider(TYPE_BAZAAR, new BazaarScmProvider());
+	    _scmManager.setScmProvider(TYPE_ACCUREV, new AccuRevScmProvider());
 	}
 
 	public void start() {
-		//commitContent(null, "first test");
+		// do nothing
 	}
 	
 	public void stop() {
-		
+		// do nothing
 	}
 	
 	@Override
-	public boolean importContent(ContentItem contentItem, String revision) {
-		
-		return false;
-	}
-	
-	@Override
-	public boolean updateContent(ContentItem contentItem, String revision) {
-		
-		return false;
-	}
-	
-	@Override
-	public boolean revertContent(ContentItem contentItem) {
-		
-		return false;
-	}
-	
-	@Override
-	public boolean commitContent(ContentItem contentItem, String comment) {
+	public SCMRevision importContent(ContentItem contentItem, String scmRevision) throws SCMException {
 		try {
-			String repositoryUrl = "scm:svn:http://henry.imag.fr/svn/fede-repos/sandbox/thomas/TestSCM";
+			String scmRepoUrl = getSCMRepositoryURL(contentItem);
+			if (scmRepoUrl == null)
+				throw new SCMException("Cannot retrieve scm url");
 			ScmRepository repository =
-				scmManager.makeScmRepository(repositoryUrl);
+				_scmManager.makeScmRepository(scmRepoUrl);
 			
-			ScmFileSet fileSet = new ScmFileSet(new File("C:\\test\\testsvn"), "**.*");
-			AddScmResult addResult = scmManager.add(repository, fileSet, comment);
+			ScmFileSet fileSet = new ScmFileSet(new File(getFilePath(contentItem)), "**.*"); // TODO manage unique file
+			CheckOutScmResult checkoutResult = _scmManager.checkOut(repository, fileSet, 
+					getScmVersion(scmRevision, repository.getProvider()), true);
 			
+			boolean isSuccess = checkoutResult.isSuccess();
+			if (!isSuccess)
+				return null;
 			
-			CheckInScmResult statusResult = scmManager.checkIn(repository, fileSet, comment);
-			
-			return statusResult.isSuccess();
+			return new SCMRevision(scmRevision, scmRepoUrl);
 		} catch (ScmRepositoryException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchScmProviderException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ScmException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		return false;
+		return null;
 	}
 	
 	@Override
-	public boolean contentHasBeenChanged(ContentItem contentItem) {
+	public SCMRevision updateContent(ContentItem contentItem, String scmRevision) throws SCMException {
 		try {
+			String scmRepoUrl = getSCMRepositoryURL(contentItem);
+			if (scmRepoUrl == null)
+				throw new SCMException("Cannot retrieve scm url");
 			ScmRepository repository =
-				scmManager.makeScmRepository("scm:hg:ssh://henry.imag.fr/toto");
+				_scmManager.makeScmRepository(scmRepoUrl);
 			
+			ScmFileSet fileSet = new ScmFileSet(new File(getFilePath(contentItem)), "**.*"); // TODO manage unique file
+			UpdateScmResult updateResult = _scmManager.update(repository, fileSet, 
+					getScmVersion(scmRevision, repository.getProvider()));
 			
-			ScmFileSet fileSet = new ScmFileSet(new File("C:\\workspaces\\cadseg\\Model.Workspace.CadseG"));
-			StatusScmResult statusResult = scmManager.status(repository, fileSet);
+			boolean isSuccess = updateResult.isSuccess();
+			if (!isSuccess)
+				return null;
+			
+			return new SCMRevision(scmRevision, scmRepoUrl);
+		} catch (ScmRepositoryException e) {
+			e.printStackTrace();
+		} catch (NoSuchScmProviderException e) {
+			e.printStackTrace();
+		} catch (ScmException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	@Override
+	public SCMRevision revertContent(ContentItem contentItem) throws SCMException {
+		String scmRevision = contentItem.getSCMRevision();
+		return updateContent(contentItem, scmRevision);
+	}
+	
+	@Override
+	public SCMRevision commitContent(ContentItem contentItem, String comment) throws SCMException {
+		try {
+			String scmRepoUrl = getSCMRepositoryURL(contentItem);
+			if (scmRepoUrl == null)
+				throw new SCMException("Cannot retrieve scm url");
+			ScmRepository repository =
+				_scmManager.makeScmRepository(scmRepoUrl);
+			
+			ScmFileSet fileSet = new ScmFileSet(new File(getFilePath(contentItem)), "**.*"); // TODO manage unique file
+			AddScmResult addResult = _scmManager.add(repository, fileSet, comment);
+			
+			CheckInScmResult statusResult = _scmManager.checkIn(repository, fileSet, comment);
+			boolean isSuccess = statusResult.isSuccess();
+			if (!isSuccess)
+				return null;
+			
+			return new SCMRevision(statusResult.getScmRevision(), scmRepoUrl);
+		} catch (ScmRepositoryException e) {
+			e.printStackTrace();
+		} catch (NoSuchScmProviderException e) {
+			e.printStackTrace();
+		} catch (ScmException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	@Override
+	public boolean contentHasBeenChanged(ContentItem contentItem) throws SCMException {
+		try {
+			String scmRepoUrl = getSCMRepositoryURL(contentItem);
+			if (scmRepoUrl == null)
+				throw new SCMException("Cannot retrieve scm url");
+			ScmRepository repository = _scmManager.makeScmRepository(scmRepoUrl);
+			
+			ScmFileSet fileSet = new ScmFileSet(new File(getFilePath(contentItem)));
+			StatusScmResult statusResult = _scmManager.status(repository, fileSet);
 			
 			if (!statusResult.isSuccess())
-				return false; //TODO should throw an exception
+				throw new SCMException("Status command failed");
 			
 			List changedFiles = statusResult.getChangedFiles();
 			if (changedFiles == null)
@@ -158,77 +206,133 @@ public class SCMServiceImpl implements SCMService {
 			
 			return !changedFiles.isEmpty();
 		} catch (ScmRepositoryException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (NoSuchScmProviderException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ScmException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		return false;
 	}
 	
-//	public void checkoutProject(MavenProjectScmInfo info, File location,
-//		      IProgressMonitor monitor) throws CoreException {
-//		    try {
-//		      String repositoryUrl = info.getRepositoryUrl();
-//		    
-//		      ScmRepository repository =
-//		scmManager.makeScmRepository(repositoryUrl);
-//		      
-//		      // ScmVersion version = new ScmRevision(info.getRevision());
-//		      
-//		      ScmFileSet fileSet = new ScmFileSet(location);
-//		      
-//		      ScmVersion scmVersion = getScmVersion(info);
-//		      
-//		      CheckOutScmResult scmResult = scmManager.checkOut(repository,
-//		fileSet, scmVersion, true);
-//		      
-//		      MavenConsole console = MavenPlugin.getDefault().getConsole();
-//		      
-//		      String provider = repository.getProvider();
-//		      
-//		      if(!scmResult.isSuccess()) {
-//		        console.logError(provider + " : failure");
-//		        console.logError(provider + " : " + scmResult.getCommandLine());
-//		        throw new CoreException(new Status(IStatus.ERROR,
-//		MavenScmPlugin.PLUGIN_ID, -1, //
-//		            scmResult.getCommandOutput() + " " +
-//		scmResult.getProviderMessage(), null));
-//		      }
-//
-//		      // String relativePathProjectDirectory =
-//		scmResult.getRelativePathProjectDirectory();
-//		      // List checkedOutFiles = scmResult.getCheckedOutFiles();
-//		      // console.logMessage(provider + " : path  " +
-//		relativePathProjectDirectory);
-//		      // console.logMessage(provider + " : files " + checkedOutFiles);
-//		      
-//		    } catch (ScmException ex) {
-//		      throw new CoreException(new Status(IStatus.ERROR,
-//		MavenScmPlugin.PLUGIN_ID, -1, "Check out error", ex));
-//		    }
-//		  }
-//	
-//	/**
-//	   * Handle provide specific SCM revision construction
-//	   */
-//	  private ScmVersion getScmVersion(MavenProjectScmInfo info) {
-//	    String revision = info.getRevision();
-//	    if(revision!=null && revision.trim().length()>0) {
-//	      if(TYPE_CVS.equals(getType())) {
-//	        // CVS tags
-//	        return new ScmTag(revision.trim());
-//	      } else if(TYPE_SVN.equals(getType())) {
-//	        return new ScmRevision(revision);
-//	      }
-//	    }
-//	    return null;
-//	  }
+	@Override
+	public String getSCMRepositoryURL(ContentItem contentItem) throws SCMException {
+		String scmRepoUrl = contentItem.getSCMRepoUrl();
+		if ((scmRepoUrl != null) && (!scmRepoUrl.trim().equals("")))
+			return scmRepoUrl;
+		
+		String svnRepoUrl = getSvnRepoUrl(contentItem);
+		if (svnRepoUrl == null)
+			return null;
+		
+		return getSCMSvnRepositoryURL(svnRepoUrl);
+	}
+
+	private String getSCMSvnRepositoryURL(String svnRepoUrl) {
+		return "scm:svn:" + svnRepoUrl;
+	}
+	
+	private String getFilePath(ContentItem contentItem) {
+		String filePath = null;
+		IFile file = (IFile) contentItem.getMainMappingContent(IFile.class);
+		if (file != null)
+			filePath = file.getLocation().toPortableString();
+		else {
+			IFolder folder = (IFolder) contentItem.getMainMappingContent(IFolder.class);
+			if (folder != null)
+				filePath = folder.getLocation().toPortableString();
+			else {
+				IProject project = (IProject) contentItem.getMainMappingContent(IProject.class);
+				if (project != null)
+					filePath = project.getLocation().toPortableString();
+			}
+		} 
+		
+		return filePath;
+	}
+
+	/**
+	 * Returns repository SVN url related to specified content item. 
+	 * 
+	 * @param contentItem item representing content of a logical item
+	 * @return repository SVN url related to specified content item. 
+	 */
+	private String getSvnRepoUrl(ContentItem contentItem) {
+		String filePath = getFilePath(contentItem);
+		
+		String svnRepoUrl = null;
+		BufferedReader inputReader = null;
+		try {
+		    // Execute a command with an argument that contains a space
+		    String[] commands = new String[]{"svn", "info", filePath};
+		          
+		    Process p = Runtime.getRuntime().exec(commands);
+		    
+		    // Read from an input stream
+	        InputStream in = p.getInputStream();
+	        inputReader = new BufferedReader(new InputStreamReader(in));
+
+	        String line;
+	        while ((line = inputReader.readLine()) != null) {
+	            if (!line.startsWith(SVN_URL_INFO_PREFIX))
+	            	continue;
+	            
+	            svnRepoUrl = line.substring(SVN_URL_INFO_PREFIX.length());
+	            break;
+	        }
+	        inputReader.close();
+	        inputReader = null;
+	        
+	        p.waitFor();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+			if (inputReader != null)
+				try {
+					inputReader.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+		}
+		
+//		ScmFileSet fileSet = new ScmFileSet(new File(filePath));
+//		SvnInfoCommand infoCmd = (SvnInfoCommand) _svnProvider.getInfoCommand();
+//		String svnUrl = null;
+//		SvnScmProviderRepository scmRepo = new SvnScmProviderRepository("svn://test");
+//		try {
+//			SvnInfoScmResult result = infoCmd.executeInfoCommand(scmRepo, fileSet, null, false, "HEAD");
+//			if (result.isSuccess()) {
+//				for (Object item : result.getInfoItems()) {
+//					//TODO
+//				}
+//			}
+//		} catch (ScmException e) {
+//			e.printStackTrace();
+//		}
+		
+		return svnRepoUrl;
+	}
+
+	/**
+	 * Handle provide specific SCM revision construction
+	 */
+	private ScmVersion getScmVersion(String revision, String scmType) {
+		if (revision != null && revision.trim().length() > 0) {
+			if (TYPE_CVS.equals(scmType)) {
+				// CVS tags
+				return new ScmTag(revision.trim());
+			} else if (TYPE_SVN.equals(scmType)) {
+				return new ScmRevision(revision);
+			}
+			// else if(TYPE_HG.equals(getType())) {
+			// return new HgRevision(revision);
+			// }
+		}
+		return null;
+	}
 	
 }
 

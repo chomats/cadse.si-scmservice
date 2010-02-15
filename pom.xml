@@ -73,5 +73,9 @@
         	<groupId>org.eclipse</groupId>
         	<artifactId>org.eclipse.equinox.common</artifactId>
         </dependency>
+        <dependency>
+        	<groupId>org.eclipse</groupId>
+        	<artifactId>org.eclipse.core.resources</artifactId>
+        </dependency>
 	</dependencies>
 </project>
