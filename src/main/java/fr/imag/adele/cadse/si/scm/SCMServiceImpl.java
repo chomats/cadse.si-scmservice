@@ -95,7 +95,7 @@ public class SCMServiceImpl implements SCMService {
 		try {
 			String scmRepoUrl = getSCMRepositoryURL(contentItem);
 			if (scmRepoUrl == null)
-				throw new SCMException("Cannot retrieve scm url");
+				throw new SCMException(CANNOT_RETRIEVE_SCM_URL);
 			ScmRepository repository =
 				_scmManager.makeScmRepository(scmRepoUrl);
 			
@@ -126,7 +126,7 @@ public class SCMServiceImpl implements SCMService {
 		try {
 			String scmRepoUrl = getSCMRepositoryURL(contentItem);
 			if (scmRepoUrl == null)
-				throw new SCMException("Cannot retrieve scm url");
+				throw new SCMException(CANNOT_RETRIEVE_SCM_URL);
 			ScmRepository repository =
 				_scmManager.makeScmRepository(scmRepoUrl);
 			
@@ -163,7 +163,7 @@ public class SCMServiceImpl implements SCMService {
 		try {
 			String scmRepoUrl = getSCMRepositoryURL(contentItem);
 			if (scmRepoUrl == null)
-				throw new SCMException("Cannot retrieve scm url");
+				throw new SCMException(CANNOT_RETRIEVE_SCM_URL);
 			ScmRepository repository =
 				_scmManager.makeScmRepository(scmRepoUrl);
 			
@@ -198,7 +198,7 @@ public class SCMServiceImpl implements SCMService {
 		try {
 			String scmRepoUrl = getSCMRepositoryURL(contentItem);
 			if (scmRepoUrl == null)
-				throw new SCMException("Cannot retrieve scm url");
+				throw new SCMException(CANNOT_RETRIEVE_SCM_URL);
 			ScmRepository repository = _scmManager.makeScmRepository(scmRepoUrl);
 			
 			ScmFileSet fileSet = new ScmFileSet(new File(getFilePath(contentItem)));
@@ -267,7 +267,8 @@ public class SCMServiceImpl implements SCMService {
 	 */
 	private String getSvnRepoUrl(ContentItem contentItem) {
 		String filePath = getFilePath(contentItem);
-		
+		if (filePath == null)
+			return null;
 		String svnRepoUrl = getSvnInfoProp(SVN_URL_INFO_PROP, filePath);
 		
 //		ScmFileSet fileSet = new ScmFileSet(new File(filePath));
