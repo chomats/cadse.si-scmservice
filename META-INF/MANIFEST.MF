@@ -70,32 +70,82 @@ iPOJO-Components: component { $immediate="true" $classname="fr.imag.ade
  CMServiceImpl" $architecture="true" callback { $transition="validate" 
  $method="start" }callback { $transition="invalidate" $method="stop" }p
  rovides { $specification="fr.imag.adele.cadse.as.scm.SCMService" }mani
- pulation { field { $name="_scmManager" $type="org.apache.maven.scm.man
- ager.BasicScmManager" }field { $name="_svnProvider" $type="fr.imag.ade
- le.cadse.si.scm.SvnExecScmProviderWithRepoURL" }method { $name="$init"
-  }method { $name="start" }method { $name="stop" }method { $arguments="
- {fr.imag.adele.cadse.core.content.ContentItem,java.lang.String}" $name
- ="importContent" $return="fr.imag.adele.cadse.as.scm.SCMRevision" }met
- hod { $arguments="{fr.imag.adele.cadse.core.content.ContentItem,java.l
- ang.String}" $name="updateContent" $return="fr.imag.adele.cadse.as.scm
- .SCMRevision" }method { $arguments="{fr.imag.adele.cadse.core.content.
- ContentItem}" $name="revertContent" $return="fr.imag.adele.cadse.as.sc
- m.SCMRevision" }method { $arguments="{fr.imag.adele.cadse.core.content
- .ContentItem,java.lang.String}" $name="commitContent" $return="fr.imag
- .adele.cadse.as.scm.SCMRevision" }method { $arguments="{fr.imag.adele.
- cadse.core.content.ContentItem}" $name="contentHasBeenChanged" $return
- ="boolean" }method { $arguments="{fr.imag.adele.cadse.core.content.Con
- tentItem}" $name="getSCMRepositoryURL" $return="java.lang.String" }met
- hod { $arguments="{java.lang.String}" $name="getSCMSvnRepositoryURL" $
- return="java.lang.String" }method { $arguments="{fr.imag.adele.cadse.c
- ore.content.ContentItem}" $name="getFilePath" $return="java.lang.Strin
- g" }method { $arguments="{fr.imag.adele.cadse.core.content.ContentItem
- }" $name="getSvnRepoUrl" $return="java.lang.String" }method { $argumen
- ts="{java.lang.String,java.lang.String}" $name="getSvnInfoProp" $retur
- n="java.lang.String" }method { $arguments="{java.lang.String}" $name="
- getScmRevision" $return="java.lang.String" }method { $arguments="{java
- .lang.String,java.lang.String}" $name="getScmVersion" $return="org.apa
- che.maven.scm.ScmVersion" }interface { $name="fr.imag.adele.cadse.as.s
- cm.SCMService" }}}instance { $component="fr.imag.adele.cadse.si.scm.SC
- MServiceImpl" $name="fr.imag.adele.cadse.si.scm.instance" }
+ pulation { field { $name="__MgetSvnInfoProp$java_lang_String$java_lang
+ _String" $type="boolean" }field { $name="__Mstart" $type="boolean" }fi
+ eld { $name="__MgetScmVersion$java_lang_String$java_lang_String" $type
+ ="boolean" }field { $name="__McontentHasBeenChanged$fr_imag_adele_cads
+ e_core_content_ContentItem" $type="boolean" }field { $name="__MupdateC
+ ontent$fr_imag_adele_cadse_core_content_ContentItem$java_lang_String" 
+ $type="boolean" }field { $name="__F_scmManager" $type="boolean" }field
+  { $name="__Mstop" $type="boolean" }field { $name="__F_svnProvider" $t
+ ype="boolean" }field { $name="__MimportContent$fr_imag_adele_cadse_cor
+ e_content_ContentItem$java_lang_String" $type="boolean" }field { $name
+ ="__IM" $type="org.apache.felix.ipojo.InstanceManager" }field { $name=
+ "__MgetScmRevision$java_lang_String" $type="boolean" }field { $name="_
+ _MgetSCMRepositoryURL$fr_imag_adele_cadse_core_content_ContentItem" $t
+ ype="boolean" }field { $name="__McommitContent$fr_imag_adele_cadse_cor
+ e_content_ContentItem$java_lang_String" $type="boolean" }field { $name
+ ="__MgetSvnRepoUrl$fr_imag_adele_cadse_core_content_ContentItem" $type
+ ="boolean" }field { $name="__MrevertContent$fr_imag_adele_cadse_core_c
+ ontent_ContentItem" $type="boolean" }field { $name="__MgetFilePath$fr_
+ imag_adele_cadse_core_content_ContentItem" $type="boolean" }field { $n
+ ame="__MgetSCMSvnRepositoryURL$java_lang_String" $type="boolean" }fiel
+ d { $name="_scmManager" $type="org.apache.maven.scm.manager.BasicScmMa
+ nager" }field { $name="_svnProvider" $type="fr.imag.adele.cadse.si.scm
+ .SvnExecScmProviderWithRepoURL" }method { $name="__get_scmManager" $re
+ turn="org.apache.maven.scm.manager.BasicScmManager" }method { $argumen
+ ts="{org.apache.maven.scm.manager.BasicScmManager}" $name="__set_scmMa
+ nager" }method { $name="__get_svnProvider" $return="fr.imag.adele.cads
+ e.si.scm.SvnExecScmProviderWithRepoURL" }method { $arguments="{fr.imag
+ .adele.cadse.si.scm.SvnExecScmProviderWithRepoURL}" $name="__set_svnPr
+ ovider" }method { $name="$init" }method { $arguments="{org.apache.feli
+ x.ipojo.InstanceManager}" $name="$init" }method { $name="start" }metho
+ d { $name="__start" }method { $name="stop" }method { $name="__stop" }m
+ ethod { $arguments="{fr.imag.adele.cadse.core.content.ContentItem,java
+ .lang.String}" $name="importContent" $return="fr.imag.adele.cadse.as.s
+ cm.SCMRevision" }method { $arguments="{fr.imag.adele.cadse.core.conten
+ t.ContentItem,java.lang.String}" $name="__importContent" $return="fr.i
+ mag.adele.cadse.as.scm.SCMRevision" }method { $arguments="{fr.imag.ade
+ le.cadse.core.content.ContentItem,java.lang.String}" $name="updateCont
+ ent" $return="fr.imag.adele.cadse.as.scm.SCMRevision" }method { $argum
+ ents="{fr.imag.adele.cadse.core.content.ContentItem,java.lang.String}"
+  $name="__updateContent" $return="fr.imag.adele.cadse.as.scm.SCMRevisi
+ on" }method { $arguments="{fr.imag.adele.cadse.core.content.ContentIte
+ m}" $name="revertContent" $return="fr.imag.adele.cadse.as.scm.SCMRevis
+ ion" }method { $arguments="{fr.imag.adele.cadse.core.content.ContentIt
+ em}" $name="__revertContent" $return="fr.imag.adele.cadse.as.scm.SCMRe
+ vision" }method { $arguments="{fr.imag.adele.cadse.core.content.Conten
+ tItem,java.lang.String}" $name="commitContent" $return="fr.imag.adele.
+ cadse.as.scm.SCMRevision" }method { $arguments="{fr.imag.adele.cadse.c
+ ore.content.ContentItem,java.lang.String}" $name="__commitContent" $re
+ turn="fr.imag.adele.cadse.as.scm.SCMRevision" }method { $arguments="{f
+ r.imag.adele.cadse.core.content.ContentItem}" $name="contentHasBeenCha
+ nged" $return="boolean" }method { $arguments="{fr.imag.adele.cadse.cor
+ e.content.ContentItem}" $name="__contentHasBeenChanged" $return="boole
+ an" }method { $arguments="{fr.imag.adele.cadse.core.content.ContentIte
+ m}" $name="getSCMRepositoryURL" $return="java.lang.String" }method { $
+ arguments="{fr.imag.adele.cadse.core.content.ContentItem}" $name="__ge
+ tSCMRepositoryURL" $return="java.lang.String" }method { $arguments="{j
+ ava.lang.String}" $name="getSCMSvnRepositoryURL" $return="java.lang.St
+ ring" }method { $arguments="{java.lang.String}" $name="__getSCMSvnRepo
+ sitoryURL" $return="java.lang.String" }method { $arguments="{fr.imag.a
+ dele.cadse.core.content.ContentItem}" $name="getFilePath" $return="jav
+ a.lang.String" }method { $arguments="{fr.imag.adele.cadse.core.content
+ .ContentItem}" $name="__getFilePath" $return="java.lang.String" }metho
+ d { $arguments="{fr.imag.adele.cadse.core.content.ContentItem}" $name=
+ "getSvnRepoUrl" $return="java.lang.String" }method { $arguments="{fr.i
+ mag.adele.cadse.core.content.ContentItem}" $name="__getSvnRepoUrl" $re
+ turn="java.lang.String" }method { $arguments="{java.lang.String,java.l
+ ang.String}" $name="getSvnInfoProp" $return="java.lang.String" }method
+  { $arguments="{java.lang.String,java.lang.String}" $name="__getSvnInf
+ oProp" $return="java.lang.String" }method { $arguments="{java.lang.Str
+ ing}" $name="getScmRevision" $return="java.lang.String" }method { $arg
+ uments="{java.lang.String}" $name="__getScmRevision" $return="java.lan
+ g.String" }method { $arguments="{java.lang.String,java.lang.String}" $
+ name="getScmVersion" $return="org.apache.maven.scm.ScmVersion" }method
+  { $arguments="{java.lang.String,java.lang.String}" $name="__getScmVer
+ sion" $return="org.apache.maven.scm.ScmVersion" }interface { $name="fr
+ .imag.adele.cadse.as.scm.SCMService" }}}instance { $component="fr.imag
+ .adele.cadse.si.scm.SCMServiceImpl" $name="fr.imag.adele.cadse.si.scm.
+ instance" }
 
