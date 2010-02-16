@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.maven.scm.ScmException;
 import org.apache.maven.scm.ScmFileSet;
@@ -43,9 +45,11 @@ import fr.imag.adele.cadse.core.content.ContentItem;
 
 public class SCMServiceImpl implements SCMService {
 
+	private static final String CANNOT_RETRIEVE_SCM_URL = "Cannot retrieve scm url";
 	private static final String SVN_URL_INFO_PROP = "URL";
-	private static final String SVN_REV_INFO_PROP = "R?vision";
+	private static final String SVN_REV_INFO_PROP = "R.vision";
 	private static final String SVN_INFO_PROP_DELIMITER = " : ";
+	private static final String SVN_INFO_PROP_POSTFIX_PATTERN = ".*";
 	private static final String TYPE_CVS = "cvs";
 	private static final String TYPE_SVN = "svn";
 	private static final String TYPE_PERFORCE = "perforce";
@@ -168,13 +172,13 @@ public class SCMServiceImpl implements SCMService {
 				_scmManager.makeScmRepository(scmRepoUrl);
 			
 			String filePath = getFilePath(contentItem);
-			ScmFileSet fileSet = new ScmFileSet(new File(filePath), "**.*"); // TODO manage unique file
-			AddScmResult addResult = _scmManager.add(repository, fileSet, comment);
+			ScmFileSet fileSet = new ScmFileSet(new File(filePath)); // TODO manage unique file
+//			AddScmResult addResult = _scmManager.add(repository, fileSet, comment);
 			
 			CheckInScmResult checkInResult = _scmManager.checkIn(repository, fileSet, comment);
 			boolean isSuccess = checkInResult.isSuccess();
 			if (!isSuccess)
-				return null;
+				throw new SCMException("Cannot commit " + filePath + " : " + checkInResult.getCommandOutput());
 			
 			String scmRevision = getScmRevision(filePath);
 			if (scmRevision == null)
@@ -186,9 +190,10 @@ public class SCMServiceImpl implements SCMService {
 			e.printStackTrace();
 		} catch (ScmException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		} 
+//		catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		
 		return null;
 	}
@@ -304,9 +309,10 @@ public class SCMServiceImpl implements SCMService {
 
 	        String line;
 	        String prefix = prop + SVN_INFO_PROP_DELIMITER;
+	        Pattern pattern = Pattern.compile(prefix + SVN_INFO_PROP_POSTFIX_PATTERN);
 	        while ((line = inputReader.readLine()) != null) {
-	            
-				if (!line.startsWith(prefix))
+	        	Matcher m = pattern.matcher(line);
+				if (!m.matches())
 	            	continue;
 	            
 				svnInfoProp = line.substring(prefix.length());
