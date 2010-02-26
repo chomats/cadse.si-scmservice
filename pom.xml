@@ -26,9 +26,10 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
-						<Bundle-Name>${pom.name}</Bundle-Name>
-						<Bundle-Description>${pom.description}</Bundle-Description>
-						<Export-Package>fr.imag.adele.cadse.si.scm;version="${version.cadse}"</Export-Package>
+						<Bundle-Name>${project.name}</Bundle-Name>
+						<Bundle-Description>${project.description}</Bundle-Description>
+						<Export-Package>fr.imag.adele.cadse.si.scm;version="${version.cadse}",org.apache.maven.scm*</Export-Package>
+						<Import-Package>!org.apache.maven.scm*,!ch.ethz.ssh2,!org.netbeans.lib.cvsclient*,org.eclipse.core.runtime;registry=!,*</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>
