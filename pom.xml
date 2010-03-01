@@ -27,9 +27,22 @@
 				<configuration>
 					<instructions>
 						<Bundle-Name>${project.name}</Bundle-Name>
+						<Private-Package>hidden.org.codehaus.plexus.interpolation*</Private-Package>
 						<Bundle-Description>${project.description}</Bundle-Description>
-						<Export-Package>fr.imag.adele.cadse.si.scm;version="${version.cadse}",org.apache.maven.scm*</Export-Package>
-						<Import-Package>!org.apache.maven.scm*,!ch.ethz.ssh2,!org.netbeans.lib.cvsclient*,org.eclipse.core.runtime;registry=!,*</Import-Package>
+						<Export-Package>fr.imag.adele.cadse.si.scm;version="${version.cadse}",
+							org.apache.maven.scm*;version=${scm.version},
+							org.codehaus.plexus.*;version=${plexus.version},
+							org.codehaus.classworlds;version=${plexus.version}
+ 						</Export-Package>
+						<Import-Package>
+							!org.apache.maven.scm*,
+							!ch.ethz.ssh2,
+							!org.netbeans.lib.cvsclient*,
+							!org.codehaus.plexus*,
+							!org.codehaus.classworlds,
+							org.eclipse.core.runtime;registry=!,
+							org.apache.regexp;version="2.7.1",
+							junit.framework;version="3.8.2",*</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>
@@ -42,41 +55,45 @@
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>as.cu</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>cu.core</artifactId>
-        </dependency>
-        <dependency>
-        	<groupId>org.codehaus.plexus</groupId>
-        	<artifactId>plexus-container-default</artifactId>
-        	<version>1.5.3</version>
-        </dependency>
-        <dependency>
-        	<groupId>org.maven.ide.components.maven_embedder</groupId>
-        	<artifactId>maven-embedder-2.1-SNAPSHOT.jar</artifactId>
-        	<version>2.1.0-20080530.2300</version>
-        </dependency>
-        <dependency>
-        	<groupId>org.apache.maven.scm</groupId>
-        	<artifactId>maven-scm-api</artifactId>
-        	<version>1.3</version>
-        </dependency>
-        <dependency>
-        	<groupId>org.apache.maven.scm</groupId>
-        	<artifactId>maven-scm-client</artifactId>
-        	<version>1.3</version>
-        	<classifier>jar-with-dependencies</classifier>
-        </dependency>
-        <dependency>
-        	<groupId>org.eclipse</groupId>
-        	<artifactId>org.eclipse.equinox.common</artifactId>
-        </dependency>
-        <dependency>
-        	<groupId>org.eclipse</groupId>
-        	<artifactId>org.eclipse.core.resources</artifactId>
-        </dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>as.cu</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>cu.core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.plexus</groupId>
+			<artifactId>plexus-container-default</artifactId>
+			<version>${plexus.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.maven.ide.components.maven_embedder</groupId>
+			<artifactId>maven-embedder-2.1-SNAPSHOT.jar</artifactId>
+			<version>2.1.0-20080530.2300</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.scm</groupId>
+			<artifactId>maven-scm-api</artifactId>
+			<version>${scm.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.scm</groupId>
+			<artifactId>maven-scm-client</artifactId>
+			<version>${scm.version}</version>
+			<classifier>jar-with-dependencies</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>org.eclipse.equinox.common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse</groupId>
+			<artifactId>org.eclipse.core.resources</artifactId>
+		</dependency>
 	</dependencies>
+	<properties>
+		<scm.version>1.3</scm.version>
+		<plexus.version>1.5.3</plexus.version>
+	</properties>
 </project>
