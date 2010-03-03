@@ -3,6 +3,5 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="con" path="org.maven.ide.eclipse.MAVEN2_CLASSPATH_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="target/si.SCMService_2.3.0-SNAPSHOT-201003021603.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
