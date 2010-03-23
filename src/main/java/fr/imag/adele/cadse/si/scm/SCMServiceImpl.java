@@ -252,7 +252,7 @@ public class SCMServiceImpl implements SCMService {
 			filePath = file.getLocation().toPortableString();
 		else {
 			IFolder folder = (IFolder) contentItem.getMainMappingContent(IFolder.class);
-			if (folder != null)
+			if (folder != null && folder.getLocation() != null)
 				filePath = folder.getLocation().toPortableString();
 			else {
 				IProject project = (IProject) contentItem.getMainMappingContent(IProject.class);
