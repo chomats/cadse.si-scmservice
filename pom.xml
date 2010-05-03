@@ -41,8 +41,8 @@
 							!org.netbeans.lib.cvsclient*,
 							!org.codehaus.plexus*,
 							!org.codehaus.classworlds,
+							!org.apache.regexp,
 							org.eclipse.core.runtime;registry=!,
-							org.apache.regexp;version="2.7.1",
 							junit.framework;version="3.8.2",*</Import-Package>
 					</instructions>
 				</configuration>
