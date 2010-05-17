@@ -42,7 +42,6 @@
 							!org.codehaus.plexus*,
 							!org.codehaus.classworlds,
 							!org.apache.regexp,
-							org.eclipse.core.runtime;registry=!,
 							junit.framework;version="3.8.2",*</Import-Package>
 					</instructions>
 				</configuration>
@@ -65,6 +64,16 @@
 		<dependency>
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-container-default</artifactId>
+			<exclusions>
+				<exclusion>
+					<artifactId>log4j</artifactId>
+					<groupId>log4j</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>commons-logging-api</artifactId>
+					<groupId>commons-logging</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.maven.ide.components.maven_embedder</groupId>
@@ -81,11 +90,24 @@
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse</groupId>
-			<artifactId>org.eclipse.equinox.common</artifactId>
+			<artifactId>org.apache.commons.logging</artifactId>
+			<version>1.1.1-v200904062255</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse</groupId>
-			<artifactId>org.eclipse.core.resources</artifactId>
+			<artifactId>org.apache.log4j</artifactId>
+			<version>1.2.13-v200903072027</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>asm</groupId>
+			<artifactId>asm</artifactId>
+			<version>3.2</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 </project>

@@ -34,9 +34,6 @@ import org.apache.maven.scm.provider.synergy.SynergyScmProvider;
 import org.apache.maven.scm.provider.vss.VssScmProvider;
 import org.apache.maven.scm.repository.ScmRepository;
 import org.apache.maven.scm.repository.ScmRepositoryException;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IProject;
 
 import fr.imag.adele.cadse.as.scm.SCMException;
 import fr.imag.adele.cadse.as.scm.SCMRevision;
@@ -247,19 +244,9 @@ public class SCMServiceImpl implements SCMService {
 	
 	private String getFilePath(ContentItem contentItem) {
 		String filePath = null;
-		IFile file = (IFile) contentItem.getMainMappingContent(IFile.class);
+		File file = (File) contentItem.getMainMappingContent(File.class);
 		if (file != null)
-			filePath = file.getLocation().toPortableString();
-		else {
-			IFolder folder = (IFolder) contentItem.getMainMappingContent(IFolder.class);
-			if (folder != null && folder.getLocation() != null)
-				filePath = folder.getLocation().toPortableString();
-			else {
-				IProject project = (IProject) contentItem.getMainMappingContent(IProject.class);
-				if (project != null && project.getLocation() != null)
-					filePath = project.getLocation().toPortableString();
-			}
-		} 
+			filePath = file.getAbsolutePath();
 		
 		return filePath;
 	}
