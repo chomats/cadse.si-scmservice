@@ -8,9 +8,9 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.imag.adele.cadse</groupId>
-	<artifactId>fr.imag.adele.cadse.si.workspace.scmservice</artifactId>
+	<artifactId>si.scmservice</artifactId>
 	<packaging>bundle</packaging>
-	<name>si.SCMService</name>
+	<name>fr.imag.adele.cadse.si.scmservice</name>
 	<version>2.3.0-SNAPSHOT</version>
 	<description>service implementation using maven scm manager to allow evolution action on IRessource</description>
 	<organization>
