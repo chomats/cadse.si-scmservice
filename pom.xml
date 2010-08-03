@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>fr.imag.adele.cadse.parent.ipojo</artifactId>
 		<groupId>fr.imag.adele.cadse</groupId>
-		<version>2.3.2</version>
+		<version>2.3.3-SNAPSHOT</version>
 		<relativePath>../fr.imag.adele.cadse.parent.ipojo</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -11,7 +11,7 @@
 	<artifactId>si.scmservice</artifactId>
 	<packaging>bundle</packaging>
 	<name>fr.imag.adele.cadse.si.scmservice</name>
-	<version>2.3.0</version>
+	<version>2.3.1-SNAPSHOT</version>
 	<description>service implementation using maven scm manager to allow evolution action on IRessource</description>
 	<organization>
 		<name>Adele/LIG/ Grenoble University, France</name>
