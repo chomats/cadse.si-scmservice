@@ -120,7 +120,7 @@ public class SCMServiceImpl implements SCMService {
 			ScmRepository repository =
 				_scmManager.makeScmRepository(scmRepoUrl);
 			
-			ScmFileSet fileSet = new ScmFileSet(new File(getFilePath(contentItem)), "**.*"); // TODO manage unique file
+			ScmFileSet fileSet = new ScmFileSet(new File(getFilePath(contentItem, false)), "**.*"); // TODO manage unique file
 			CheckOutScmResult checkoutResult = _scmManager.checkOut(repository, fileSet, 
 					getScmVersion(scmRevision, repository.getProvider()), true);
 			
@@ -151,7 +151,7 @@ public class SCMServiceImpl implements SCMService {
 			ScmRepository repository =
 				_scmManager.makeScmRepository(scmRepoUrl);
 			
-			ScmFileSet fileSet = new ScmFileSet(new File(getFilePath(contentItem)), "**.*"); // TODO manage unique file
+			ScmFileSet fileSet = new ScmFileSet(new File(getFilePath(contentItem, false)), "**.*"); // TODO manage unique file
 			UpdateScmResult updateResult = _scmManager.update(repository, fileSet, 
 					getScmVersion(scmRevision, repository.getProvider()));
 			
@@ -188,7 +188,7 @@ public class SCMServiceImpl implements SCMService {
 			ScmRepository repository =
 				_scmManager.makeScmRepository(scmRepoUrl);
 			
-			String filePath = getFilePath(contentItem);
+			String filePath = getFilePath(contentItem, false);
 			ScmFileSet fileSet = new ScmFileSet(new File(filePath)); // TODO manage unique file
 //			AddScmResult addResult = _scmManager.add(repository, fileSet, comment);
 			
@@ -223,7 +223,7 @@ public class SCMServiceImpl implements SCMService {
 				throw new SCMException(CANNOT_RETRIEVE_SCM_URL);
 			ScmRepository repository = _scmManager.makeScmRepository(scmRepoUrl);
 			
-			ScmFileSet fileSet = new ScmFileSet(new File(getFilePath(contentItem)));
+			ScmFileSet fileSet = new ScmFileSet(new File(getFilePath(contentItem, false)));
 			StatusScmResult statusResult = _scmManager.status(repository, fileSet);
 			
 			if (!statusResult.isSuccess())
@@ -262,9 +262,11 @@ public class SCMServiceImpl implements SCMService {
 		return "scm:svn:" + svnRepoUrl;
 	}
 	
-	private String getFilePath(ContentItem contentItem) {
+	private String getFilePath(ContentItem contentItem, boolean ckeckIsDirectory) {
 		String filePath = null;
 		File file = (File) contentItem.getMainMappingContent(File.class);
+		if (ckeckIsDirectory && !file.isDirectory())
+			return null;
 		if (file != null)
 			filePath = file.getAbsolutePath();
 		
@@ -278,7 +280,7 @@ public class SCMServiceImpl implements SCMService {
 	 * @return repository SVN url related to specified content item. 
 	 */
 	private String getSvnRepoUrl(ContentItem contentItem) {
-		String filePath = getFilePath(contentItem);
+		String filePath = getFilePath(contentItem, true);
 		if (filePath == null)
 			return null;
 		String svnRepoUrl = getSvnInfoProp(SVN_URL_INFO_PROP, filePath);
